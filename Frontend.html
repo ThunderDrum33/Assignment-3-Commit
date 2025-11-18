@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="style.css">
+    <title>my 3rd Assignment</title>
+</head>
+<body>
+    <h2>Upload a Text File</h2>
+    <input type="file" id="fileInput" accept=".txt">
+    <button onclick="processFile()">Submit Here</button>
+    <p id="result"></p>
+
+    <hr>
+
+    <h2>BMI Calculator</h2>
+    <label>Weight (in pounds): <input type="number" id="weight"></label><br>
+    <label>Height (in feet): <input type="number" id="feet"></label><br>
+    <label>Height (in inches): <input type="number" id="inches"></label><br>
+    <button onclick="calculateTheBMI()">Calculate (probably your) BMI</button>
+    <p id="bmiResult"></p>
+
+    <script>
+    async function processFile() {
+      const file = document.getElementById("fileInput").files[0];
+      if (!file) {
+        alert("You have to upload a file first.");
+        return;
+      }
+      const text = await file.text();
+
+      const response = await fetch("/count", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sentence: text })
+      });
+
+      const data = await response.json();
+      document.getElementById("result").innerText =
+        `Vowels: ${data.vowels}, Consonants: ${data.consonants}`;
+    }
+
+    function calculateTheBMI() {
+      const weight = parseFloat(document.getElementById("weight").value);
+      const feet = parseFloat(document.getElementById("feet").value);
+      const inches = parseFloat(document.getElementById("inches").value);
+      const heightInInches = (feet * 12) + inches;
+      const heightInMeters = heightInInches * 0.0254;
+      const weightInKg = weight * 0.453592;
+      const bmi = weightInKg / (heightInMeters * heightInMeters);
+      document.getElementById("bmiResult").innerText = `BMI: ${bmi.toFixed(2)}`;
+    }
+    </script>
+</body>
+</html>
